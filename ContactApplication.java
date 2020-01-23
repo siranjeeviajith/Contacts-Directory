@@ -262,25 +262,34 @@ public class ContactApplication implements Serializable {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
+		MultiKeyMap details;
+		Map<String,Contact> emailMap;
+		Map<String,Long> nameMap;
+		try {
 		FileInputStream fileInMap1=new FileInputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\details.txt");
 		ObjectInputStream inMap1=new ObjectInputStream(fileInMap1);
 		FileInputStream fileInMap2=new FileInputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\emailMap.txt");
 		ObjectInputStream inMap2=new ObjectInputStream(fileInMap2);
 		FileInputStream fileInMap3=new FileInputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\nameMap.txt");
 		ObjectInputStream inMap3=new ObjectInputStream(fileInMap3);
-		MultiKeyMap details=(MultiKeyMap) inMap1.readObject();
-		Map<String,Contact> emailMap=(HashMap) inMap2.readObject();
-		Map<String,Long> nameMap=(TreeMap) inMap3.readObject();
 		
+		details=(MultiKeyMap) inMap1.readObject();
+		emailMap=(HashMap) inMap2.readObject();
+		nameMap=(TreeMap) inMap3.readObject();
+		
+		}
+		catch(Exception e) {
+			details=new MultiKeyMap();
+			emailMap=new HashMap();
+			nameMap=new TreeMap<>();
+		}
 		FileOutputStream fileOutMap1=new FileOutputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\details.txt");
 		ObjectOutputStream outMap1=new ObjectOutputStream(fileOutMap1);
 		FileOutputStream fileOutMap2=new FileOutputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\emailMap.txt");
 		ObjectOutputStream outMap2=new ObjectOutputStream(fileOutMap2);
 		FileOutputStream fileOutMap3=new FileOutputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\nameMap.txt");
 		ObjectOutputStream outMap3=new ObjectOutputStream(fileOutMap3);
-//		MultiKeyMap details=new MultiKeyMap();
-//		Map<String,Contact> emailMap=new HashMap();
-//		Map<String,Long> nameMap=new TreeMap<>();
+		
 		
 		while(true) {
 		try {
