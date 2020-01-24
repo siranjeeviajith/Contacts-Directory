@@ -34,17 +34,17 @@ public class ContactApplication implements Serializable {
 			if(nameMap.containsKey(name)) {
 				throw new Exception("Name is already exists.");
 			}
-			System.out.println("Enter 10 digit Phone Number");
+			System.out.println("Enter 6 - 15 digit Phone Number");
 			String temp=scan.nextLine();
 			if(!checkIsValidNumber(temp)) {
-				throw new Exception("Number exceeding 15 digits.");
+				throw new Exception("Number "+temp+" is not valid");
 			}
 			number=Long.parseLong(temp);
 			System.out.println("Enter  Email");
 			email = scan.nextLine();
 			
 			if(!checkIsValidEmail(email)) {
-				throw new Exception("Email is not valid ..");
+				throw new Exception("Email:"+email+" is not valid ..");
 			}
 			if(emailMap.containsKey(email)) {
 				throw new Exception("Email is aleady exists");
@@ -85,7 +85,7 @@ public class ContactApplication implements Serializable {
 				contact=emailMap.get(email);
 				System.out.println("Contact found:\n"+contact);
 			}else {
-				System.out.println("No contact is present .Try Again!");
+				throw new Exception("Email:"+email+" is not found.");
 			}
 		}
 		else if(option==2) {
@@ -96,7 +96,7 @@ public class ContactApplication implements Serializable {
 				System.out.println("Name found:\n"+details.get(name,uid));
 			}
 			else {
-				System.out.println("No contact is present .Try Again!");
+				throw new Exception("Name:"+name+" is not found.");
 			}
 		}
 	}catch(Exception e) {
@@ -121,7 +121,7 @@ public class ContactApplication implements Serializable {
 				emailMap.remove(email);
 				System.out.println("Email:" + email + " is deleted");
 			} else {
-				System.out.println("No email is found! Try again");
+				System.out.println("Email"+email+" is not found! Try again");
 			}
 		} catch (Exception e) {
 			System.out.println(e + "  Try Again");
@@ -209,7 +209,7 @@ public class ContactApplication implements Serializable {
 			throw new Exception("Email :"+emailNew+" is already exists");
 		}
 		if(!checkIsValidEmail(email)) {
-			throw new Exception("Email is not valid ..");
+			throw new Exception("Email:"+email+" is not valid ..");
 		}
 		contact=emailMap.get(email);
 		contact.setEmail(emailNew);
@@ -238,10 +238,10 @@ public class ContactApplication implements Serializable {
 		try {
 		long numberNew;
 		Contact contact;
-		System.out.println("Enter the Number :");
+		System.out.println("Enter the 6 - 15 digit Number :");
 		String temp=scan.nextLine();
 		if(!checkIsValidNumber(temp)) {
-			throw new Exception("Number exceeding 15 digits.");
+			throw new Exception("Number "+temp+" is not valid.");
 		}
 		numberNew=Long.parseLong(temp);
 		contact=emailMap.get(email);
