@@ -26,8 +26,7 @@ public class ContactApplication implements Serializable {
 		String email;
 		String address;
 		Contact contact;
-		String eFormat = "\\w+@\\w+\\.\\w+";
-		Pattern pat = Pattern.compile(eFormat);
+		
 		try {
 			System.out.println("Creating New Contact:");
 			System.out.println("Enter Name:");
@@ -37,14 +36,14 @@ public class ContactApplication implements Serializable {
 			}
 			System.out.println("Enter 10 digit Phone Number");
 			String temp=scan.nextLine();
-			if(temp.length()>15) {
+			if(!checkIsValidNumber(temp)) {
 				throw new Exception("Number exceeding 15 digits.");
 			}
 			number=Long.parseLong(temp);
 			System.out.println("Enter  Email");
 			email = scan.nextLine();
-			Matcher match=pat.matcher(email);
-			if(!match.matches()) {
+			
+			if(!checkIsValidEmail(email)) {
 				throw new Exception("Email is not valid ..");
 			}
 			if(emailMap.containsKey(email)) {
@@ -180,6 +179,9 @@ public class ContactApplication implements Serializable {
 		
 		System.out.println("Enter the name:");
 		nameNew=scan.nextLine();
+		if(!nameMap.containsKey(nameNew)) {
+			throw new Exception("Name:"+nameNew+" already exist!");
+		}
 		contact=emailMap.get(email);
 		nameOld=contact.getName();
 		contact.setName(nameNew);
@@ -193,9 +195,9 @@ public class ContactApplication implements Serializable {
 		}
 		
 	}
+	
 	public static void updateEmail(MultiKeyMap details,Map<String,Contact> emailMap,Map<String, Long> nameMap,String email) {
-		String eFormat = "\\w+@\\w+\\.\\w+";
-		Pattern pat = Pattern.compile(eFormat);
+		
 		try {
 		String emailOld;
 		String emailNew;
@@ -203,12 +205,13 @@ public class ContactApplication implements Serializable {
 		
 		System.out.println("Enter the email:");
 		emailNew=scan.nextLine();
-		Matcher match=pat.matcher(email);
-		if(!match.matches()) {
+		if(!emailMap.containsKey(emailNew)) {
+			throw new Exception("Email :"+emailNew+" is already exists");
+		}
+		if(!checkIsValidEmail(email)) {
 			throw new Exception("Email is not valid ..");
 		}
 		contact=emailMap.get(email);
-		
 		contact.setEmail(emailNew);
 		emailMap.remove(email);
 		emailMap.put(emailNew,contact);
@@ -237,7 +240,7 @@ public class ContactApplication implements Serializable {
 		Contact contact;
 		System.out.println("Enter the Number :");
 		String temp=scan.nextLine();
-		if(temp.length()>15) {
+		if(!checkIsValidNumber(temp)) {
 			throw new Exception("Number exceeding 15 digits.");
 		}
 		numberNew=Long.parseLong(temp);
@@ -247,6 +250,26 @@ public class ContactApplication implements Serializable {
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
+	}
+	public static boolean checkIsValidEmail(String email) {
+		String eFormat = "\\w+@\\w+\\.\\w+";
+		Pattern pat = Pattern.compile(eFormat);
+		Matcher match=pat.matcher(email);
+		if(match.matches()) {
+			return true;
+			
+		}
+		return false;
+	}
+	public static boolean checkIsValidNumber(String number) {
+		String eFormat = "\\d+{5,16}";
+		Pattern pat = Pattern.compile(eFormat);
+		Matcher match=pat.matcher(number);
+		if(match.matches()) {
+			return true;
+		}
+		return false;
+		
 	}
 	  
 
@@ -313,7 +336,7 @@ public class ContactApplication implements Serializable {
 					break;
 			case 5 : displayContacts(nameMap,details);
 					break;
-			case 6 : System.out.println("Application closing");
+			case 6 : System.out.println("Application closing! Bye..");
 					outMap1.writeObject(details);
 					outMap2.writeObject(emailMap);
 					outMap3.writeObject(nameMap);
