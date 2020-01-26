@@ -59,7 +59,7 @@ public class Contact implements Serializable {
 		}
 		
 		public String toString() {
-			return "Name:"+name+"\n\t->Number:+91"+number+"\n\t->Email:"+email+"\n\t->Address:"+address+"\n";
+			return "Name:"+this.name+"\n\t->Number:+91"+this.number+"\n\t->Email:"+this.email+"\n\t->Address:"+this.address+"\n";
 		}
 		
 		

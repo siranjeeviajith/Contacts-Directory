@@ -162,6 +162,7 @@ public class ContactApplication implements Serializable {
 			default:
 				System.out.println("Try Again!");
 			}
+			System.out.println("Contact updated.");
 		} else {
 			System.out.println("The email:" + email + " is not present. Try Again!");
 		}
@@ -182,7 +183,7 @@ public class ContactApplication implements Serializable {
 		if(nameNew.isEmpty()) {
 			throw new Exception("Please enter a name.");
 		}
-		if(!nameIndex.containsKey(nameNew)) {
+		if(nameIndex.containsKey(nameNew)) {
 			throw new Exception("Name:"+nameNew+" already exist!");
 		}
 		contact=emailIndex.get(email);
@@ -202,22 +203,24 @@ public class ContactApplication implements Serializable {
 	public static void updateEmail(MultiKeyMap nameUidIndex,Map<String,Contact> emailIndex,Map<String, Long> nameIndex,String email) {
 		
 		try {
-		String emailOld;
+		
 		String emailNew;
 		Contact contact;
 		
 		System.out.println("Enter the email:");
 		emailNew=scan.nextLine();
-		if(!emailIndex.containsKey(emailNew)) {
+		if(emailIndex.containsKey(emailNew)) {
 			throw new Exception("Email :"+emailNew+" is already exists");
 		}
-		if(!checkIsValidEmail(email)) {
-			throw new Exception("Email:"+email+" is not valid ..");
+		if(!checkIsValidEmail(emailNew)) {
+			throw new Exception("Email:"+emailNew+" is not valid ..");
 		}
 		contact=emailIndex.get(email);
 		contact.setEmail(emailNew);
 		emailIndex.remove(email);
 		emailIndex.put(emailNew,contact);
+		nameUidIndex.put(contact.getName(),contact.getUid(),contact);
+		
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
@@ -250,6 +253,7 @@ public class ContactApplication implements Serializable {
 		contact=emailIndex.get(email);
 		contact.setNumber(numberNew);
 		emailIndex.put(email, contact);
+		nameUidIndex.put(contact.getName(),contact.getUid(),contact);
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
