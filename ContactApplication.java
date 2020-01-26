@@ -19,7 +19,7 @@ public class ContactApplication implements Serializable {
 	static Scanner scan = new Scanner(System.in);
 	static long uids = 0;
 
-	public static void createContact(MultiKeyMap details, Map<String, Contact> emailMap, Map<String, Long> nameMap) {
+	public static void createContact(MultiKeyMap nameUidIndex, Map<String, Contact> emailIndex, Map<String, Long> nameIndex) {
 		long number;
 		long uid;
 		String name;
@@ -31,8 +31,8 @@ public class ContactApplication implements Serializable {
 			System.out.println("Creating New Contact:");
 			System.out.println("Enter Name:");
 			name = scan.nextLine();
-			if(nameMap.containsKey(name)) {
-				throw new Exception("Name is already exists.");
+			if(nameIndex.containsKey(name)) {
+				throw new Exception("Name "+name+" is already exists.");
 			}
 			System.out.println("Enter 6 - 15 digit Phone Number");
 			String temp=scan.nextLine();
@@ -46,17 +46,17 @@ public class ContactApplication implements Serializable {
 			if(!checkIsValidEmail(email)) {
 				throw new Exception("Email:"+email+" is not valid ..");
 			}
-			if(emailMap.containsKey(email)) {
-				throw new Exception("Email is aleady exists");
+			if(emailIndex.containsKey(email)) {
+				throw new Exception("Email "+email+" is aleady exists");
 			}
 			System.out.println("Enter Address:");
 			address = scan.nextLine();
 			contact = new Contact(name, number, email, address,0);
 			uid = contact.hashCode();
 			contact.setUid(uid);
-			details.put(name, uid, contact);
-			emailMap.put(email, contact);
-			nameMap.put(name, uid);
+			nameUidIndex.put(name, uid, contact);
+			emailIndex.put(email, contact);
+			nameIndex.put(name, uid);
 			System.out.println(contact);
 			System.out.println("Contact created");
 		} catch (Exception e) {
@@ -65,7 +65,7 @@ public class ContactApplication implements Serializable {
 
 	}
 
-	public static void searchContact(MultiKeyMap details,Map<String,Contact> emailMap,Map<String, Long> nameMap) {
+	public static void searchContact(MultiKeyMap nameUidIndex,Map<String,Contact> emailIndex,Map<String, Long> nameIndex) {
 		int option;
 		long uid;
 		String email;
@@ -81,8 +81,8 @@ public class ContactApplication implements Serializable {
 		if(option == 1) {
 			System.out.println("Enter the email to search:");
 			email=scan.nextLine();
-			if(emailMap.containsKey(email)) {
-				contact=emailMap.get(email);
+			if(emailIndex.containsKey(email)) {
+				contact=emailIndex.get(email);
 				System.out.println("Contact found:\n"+contact);
 			}else {
 				throw new Exception("Email:"+email+" is not found.");
@@ -91,9 +91,9 @@ public class ContactApplication implements Serializable {
 		else if(option==2) {
 			System.out.println("Enter the Name to search:");
 			name=scan.nextLine();
-			if(nameMap.containsKey(name)) {
-				uid=nameMap.get(name);
-				System.out.println("Name found:\n"+details.get(name,uid));
+			if(nameIndex.containsKey(name)) {
+				uid=nameIndex.get(name);
+				System.out.println("Name found:\n"+nameUidIndex.get(name,uid));
 			}
 			else {
 				throw new Exception("Name:"+name+" is not found.");
@@ -106,7 +106,7 @@ public class ContactApplication implements Serializable {
 		
 	}
 
-	public static void deleteContact(MultiKeyMap details, Map<String, Contact> emailMap, Map<String, Long> nameMap) {
+	public static void deleteContact(MultiKeyMap nameUidIndex, Map<String, Contact> emailIndex, Map<String, Long> nameIndex) {
 		String email;
 		Contact contact;
 		try {
@@ -114,11 +114,11 @@ public class ContactApplication implements Serializable {
 			System.out.println("Deleting Contact:");
 			System.out.println("Enter a contact email to delete:");
 			email = scan.nextLine();
-			if (emailMap.containsKey(email)) {
-				contact = emailMap.get(email);
-				nameMap.remove(contact.getName());
-				details.remove(contact.getName(), contact.getUid());
-				emailMap.remove(email);
+			if (emailIndex.containsKey(email)) {
+				contact = emailIndex.get(email);
+				nameIndex.remove(contact.getName());
+				nameUidIndex.remove(contact.getName(), contact.getUid());
+				emailIndex.remove(email);
 				System.out.println("Email:" + email + " is deleted");
 			} else {
 				System.out.println("Email"+email+" is not found! Try again");
@@ -128,7 +128,7 @@ public class ContactApplication implements Serializable {
 		}
 	}
 
-	public static void updateContact(MultiKeyMap details, Map<String, Contact> emailMap, Map<String, Long> nameMap) {
+	public static void updateContact(MultiKeyMap nameUidIndex, Map<String, Contact> emailIndex, Map<String, Long> nameIndex) {
 		long number;
 		int option;
 
@@ -139,7 +139,7 @@ public class ContactApplication implements Serializable {
 		System.out.println("Updating a contact:");
 		System.out.println("Enter a email contact you want to update:");
 		email = scan.nextLine();
-		if (emailMap.containsKey(email)) {
+		if (emailIndex.containsKey(email)) {
 			System.out.println("Enter a option:\n" 
 		                       + "1 - Name\n" 
 					           + "2 - Email\n" 
@@ -148,16 +148,16 @@ public class ContactApplication implements Serializable {
 			option = Integer.parseInt(scan.nextLine());
 			switch (option) {
 			case 1:
-				updateName(details, emailMap, nameMap, email);
+				updateName(nameUidIndex, emailIndex, nameIndex, email);
 				break;
 			case 2:
-				updateEmail(details, emailMap, nameMap, email);
+				updateEmail(nameUidIndex, emailIndex, nameIndex, email);
 				break;
 			case 3:
-				updateAddress(details, emailMap, nameMap, email);
+				updateAddress(nameUidIndex, emailIndex, nameIndex, email);
 				break;
 			case 4:
-				updateNumber(details, emailMap, nameMap, email);
+				updateNumber(nameUidIndex, emailIndex, nameIndex, email);
 				break;
 			default:
 				System.out.println("Try Again!");
@@ -171,7 +171,7 @@ public class ContactApplication implements Serializable {
 
 	}
 
-	public static void updateName(MultiKeyMap details,Map<String,Contact> emailMap,Map<String, Long> nameMap,String email) {
+	public static void updateName(MultiKeyMap nameUidIndex,Map<String,Contact> emailIndex,Map<String, Long> nameIndex,String email) {
 		String nameOld;
 		String nameNew;
 		Contact contact;
@@ -179,24 +179,27 @@ public class ContactApplication implements Serializable {
 		
 		System.out.println("Enter the name:");
 		nameNew=scan.nextLine();
-		if(!nameMap.containsKey(nameNew)) {
+		if(nameNew.isEmpty()) {
+			throw new Exception("Please enter a name.");
+		}
+		if(!nameIndex.containsKey(nameNew)) {
 			throw new Exception("Name:"+nameNew+" already exist!");
 		}
-		contact=emailMap.get(email);
+		contact=emailIndex.get(email);
 		nameOld=contact.getName();
 		contact.setName(nameNew);
-		emailMap.put(email,contact);
-		nameMap.remove(nameOld);
-		nameMap.put(nameNew,contact.getUid());
-		details.remove(nameOld,contact.getUid());
-		details.put(nameNew,contact.getUid(),contact);		
+		emailIndex.put(email,contact);
+		nameIndex.remove(nameOld);
+		nameIndex.put(nameNew,contact.getUid());
+		nameUidIndex.remove(nameOld,contact.getUid());
+		nameUidIndex.put(nameNew,contact.getUid(),contact);		
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
 		
 	}
 	
-	public static void updateEmail(MultiKeyMap details,Map<String,Contact> emailMap,Map<String, Long> nameMap,String email) {
+	public static void updateEmail(MultiKeyMap nameUidIndex,Map<String,Contact> emailIndex,Map<String, Long> nameIndex,String email) {
 		
 		try {
 		String emailOld;
@@ -205,36 +208,36 @@ public class ContactApplication implements Serializable {
 		
 		System.out.println("Enter the email:");
 		emailNew=scan.nextLine();
-		if(!emailMap.containsKey(emailNew)) {
+		if(!emailIndex.containsKey(emailNew)) {
 			throw new Exception("Email :"+emailNew+" is already exists");
 		}
 		if(!checkIsValidEmail(email)) {
 			throw new Exception("Email:"+email+" is not valid ..");
 		}
-		contact=emailMap.get(email);
+		contact=emailIndex.get(email);
 		contact.setEmail(emailNew);
-		emailMap.remove(email);
-		emailMap.put(emailNew,contact);
+		emailIndex.remove(email);
+		emailIndex.put(emailNew,contact);
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
 	}
-	public static void updateAddress(MultiKeyMap details,Map<String,Contact> emailMap,Map<String, Long> nameMap,String email) {
+	public static void updateAddress(MultiKeyMap nameUidIndex,Map<String,Contact> emailIndex,Map<String, Long> nameIndex,String email) {
 		String addressOld;
 		String addressNew;
 		Contact contact;
 		try {
 		System.out.println("Enter the address:");
 		addressNew=scan.nextLine();
-		contact=emailMap.get(email);
+		contact=emailIndex.get(email);
 		contact.setAddress(addressNew);
-		emailMap.put(email,contact);
-		details.put(contact.getName(),contact.getUid(),contact);
+		emailIndex.put(email,contact);
+		nameUidIndex.put(contact.getName(),contact.getUid(),contact);
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
 	}
-	public static void updateNumber(MultiKeyMap details,Map<String,Contact> emailMap,Map<String, Long> nameMap,String email) {
+	public static void updateNumber(MultiKeyMap nameUidIndex,Map<String,Contact> emailIndex,Map<String, Long> nameIndex,String email) {
 		try {
 		long numberNew;
 		Contact contact;
@@ -244,9 +247,9 @@ public class ContactApplication implements Serializable {
 			throw new Exception("Number "+temp+" is not valid.");
 		}
 		numberNew=Long.parseLong(temp);
-		contact=emailMap.get(email);
+		contact=emailIndex.get(email);
 		contact.setNumber(numberNew);
-		emailMap.put(email, contact);
+		emailIndex.put(email, contact);
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
@@ -273,10 +276,10 @@ public class ContactApplication implements Serializable {
 	}
 	  
 
-	public static void displayContacts(Map<String, Long> nameMap,MultiKeyMap details) {
-		if (!nameMap.isEmpty()) {
-			for (String name : nameMap.keySet()) {
-				System.out.println(details.get(name,nameMap.get(name)));
+	public static void displayContacts(Map<String, Long> nameIndex,MultiKeyMap nameUidIndex) {
+		if (!nameIndex.isEmpty()) {
+			for (String name : nameIndex.keySet()) {
+				System.out.println(nameUidIndex.get(name,nameIndex.get(name)));
 			}
 		} else {
 			System.out.println("There is no contact in the Directory!");
@@ -285,33 +288,10 @@ public class ContactApplication implements Serializable {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
-		MultiKeyMap details;
-		Map<String,Contact> emailMap;
-		Map<String,Long> nameMap;
-		try {
-		FileInputStream fileInMap1=new FileInputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\details.txt");
-		ObjectInputStream inMap1=new ObjectInputStream(fileInMap1);
-		FileInputStream fileInMap2=new FileInputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\emailMap.txt");
-		ObjectInputStream inMap2=new ObjectInputStream(fileInMap2);
-		FileInputStream fileInMap3=new FileInputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\nameMap.txt");
-		ObjectInputStream inMap3=new ObjectInputStream(fileInMap3);
+		MultiKeyMap nameUidIndex = NameUidIndex.readDataFromFile();
+		Map<String,Contact> emailIndex =  EmailIndex.readDataFromFile();
+		Map<String,Long> nameIndex = NameIndex.readDataFromFile();
 		
-		details=(MultiKeyMap) inMap1.readObject();
-		emailMap=(HashMap) inMap2.readObject();
-		nameMap=(TreeMap) inMap3.readObject();
-		
-		}
-		catch(Exception e) {
-			details=new MultiKeyMap();
-			emailMap=new HashMap();
-			nameMap=new TreeMap<>();
-		}
-		FileOutputStream fileOutMap1=new FileOutputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\details.txt");
-		ObjectOutputStream outMap1=new ObjectOutputStream(fileOutMap1);
-		FileOutputStream fileOutMap2=new FileOutputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\emailMap.txt");
-		ObjectOutputStream outMap2=new ObjectOutputStream(fileOutMap2);
-		FileOutputStream fileOutMap3=new FileOutputStream("C:\\Users\\User\\eclipse-workspace\\ContactsDirectory\\src\\nameMap.txt");
-		ObjectOutputStream outMap3=new ObjectOutputStream(fileOutMap3);
 		
 		
 		while(true) {
@@ -323,35 +303,38 @@ public class ContactApplication implements Serializable {
 					+ "4 - Delete a Contact\n"
 					+ "5 - Display Contacts\n"					
 					+ "6 - Exit");
+			int input=0;
 			System.out.println("Enter a option:");
-			int input=Integer.parseInt(scan.nextLine());
+			input=Integer.parseInt(scan.nextLine());
+			//if(scan.hasNext()) {
 			switch(input) {
-			case 1 : createContact(details,emailMap,nameMap);
+			case 1 : createContact(nameUidIndex,emailIndex,nameIndex);
 					break;
-			case 2 : searchContact(details,emailMap,nameMap);
+			case 2 : searchContact(nameUidIndex,emailIndex,nameIndex);
 					break;
-			case 3 : updateContact(details,emailMap,nameMap);
+			case 3 : updateContact(nameUidIndex,emailIndex,nameIndex);
 			        break;
-			case 4 : deleteContact(details,emailMap,nameMap);
+			case 4 : deleteContact(nameUidIndex,emailIndex,nameIndex);
 					break;
-			case 5 : displayContacts(nameMap,details);
+			case 5 : displayContacts(nameIndex,nameUidIndex);
 					break;
 			case 6 : System.out.println("Application closing! Bye..");
-					outMap1.writeObject(details);
-					outMap2.writeObject(emailMap);
-					outMap3.writeObject(nameMap);
+					((NameUidIndex) nameUidIndex).writeDataToFile();
+					 ((EmailIndex) emailIndex).writeDataToFile();
+					((NameIndex) nameIndex).writeDataToFile();
 					System.exit(0);
 					break;
 			default :System.out.println("Try Again!");
-		    }
+		 //   }
+			}
 		}
-		catch(InputMismatchException e) {
+		catch(Exception e) {
 			System.out.println("Wrong Input! Please try again!");
 			}
-	
 		
-
 	}
+		
+		}
 	}
 
-}
+
