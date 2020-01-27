@@ -3,15 +3,15 @@ import java.io.Serializable;
 public class Contact implements Serializable {
 	
 	 private String name;
-		private String address;
+	
 		private long number;
 		private String email;
 	    private long uid;
-	    
+	    Address address;
 		public Contact() {
 			
 		}
-		public Contact(String name,long number,String email,String address,long uid) {
+		public Contact(String name,long number,String email,Address address,long uid) {
 			this.name=name;
 			this.number=number;
 			this.address=address;
@@ -22,7 +22,7 @@ public class Contact implements Serializable {
 			return this.name;
 		}
 		
-		public String getAddress() {
+		public Address getAddress() {
 			return this.address;
 		}
 		
@@ -42,7 +42,7 @@ public class Contact implements Serializable {
 			this.name=name;
 		}
 		
-		public void setAddress(String address) {
+		public void setAddress(Address address) {
 			this.address=address;
 		}
 		

@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.map.MultiKeyMap;
 
-public class ContactApplication implements Serializable {
+public class ContactApplication  {
 	static Scanner scan = new Scanner(System.in);
 	static long uids = 0;
 
@@ -24,14 +24,13 @@ public class ContactApplication implements Serializable {
 		long uid;
 		String name;
 		String email;
-		String address;
 		Contact contact;
 		
 		try {
 			System.out.println("Creating New Contact:");
 			System.out.println("Enter Name:");
 			name = scan.nextLine();
-			if(nameIndex.containsKey(name)) {
+			if(nameIndex.containsKey(name.toLowerCase())) {
 				throw new Exception("Name "+name+" is already exists.");
 			}
 			System.out.println("Enter 6 - 15 digit Phone Number");
@@ -49,14 +48,15 @@ public class ContactApplication implements Serializable {
 			if(emailIndex.containsKey(email)) {
 				throw new Exception("Email "+email+" is aleady exists");
 			}
-			System.out.println("Enter Address:");
-			address = scan.nextLine();
+			
+			Address address=new Address();
+			getAddress(address);
 			contact = new Contact(name, number, email, address,0);
 			uid = contact.hashCode();
 			contact.setUid(uid);
-			nameUidIndex.put(name, uid, contact);
+			nameUidIndex.put(name.toLowerCase(), uid, contact);
 			emailIndex.put(email, contact);
-			nameIndex.put(name, uid);
+			nameIndex.put(name.toLowerCase(), uid);
 			System.out.println(contact);
 			System.out.println("Contact created");
 		} catch (Exception e) {
@@ -91,9 +91,9 @@ public class ContactApplication implements Serializable {
 		else if(option==2) {
 			System.out.println("Enter the Name to search:");
 			name=scan.nextLine();
-			if(nameIndex.containsKey(name)) {
-				uid=nameIndex.get(name);
-				System.out.println("Name found:\n"+nameUidIndex.get(name,uid));
+			if(nameIndex.containsKey(name.toLowerCase())) {
+				uid=nameIndex.get(name.toLowerCase());
+				System.out.println("Name found:\n"+nameUidIndex.get(name.toLowerCase(),uid));
 			}
 			else {
 				throw new Exception("Name:"+name+" is not found.");
@@ -116,8 +116,8 @@ public class ContactApplication implements Serializable {
 			email = scan.nextLine();
 			if (emailIndex.containsKey(email)) {
 				contact = emailIndex.get(email);
-				nameIndex.remove(contact.getName());
-				nameUidIndex.remove(contact.getName(), contact.getUid());
+				nameIndex.remove(contact.getName().toLowerCase());
+				nameUidIndex.remove(contact.getName().toLowerCase(), contact.getUid());
 				emailIndex.remove(email);
 				System.out.println("Email:" + email + " is deleted");
 			} else {
@@ -190,10 +190,10 @@ public class ContactApplication implements Serializable {
 		nameOld=contact.getName();
 		contact.setName(nameNew);
 		emailIndex.put(email,contact);
-		nameIndex.remove(nameOld);
-		nameIndex.put(nameNew,contact.getUid());
-		nameUidIndex.remove(nameOld,contact.getUid());
-		nameUidIndex.put(nameNew,contact.getUid(),contact);		
+		nameIndex.remove(nameOld.toLowerCase());
+		nameIndex.put(nameNew.toLowerCase(),contact.getUid());
+		nameUidIndex.remove(nameOld.toLowerCase(),contact.getUid());
+		nameUidIndex.put(nameNew.toLowerCase(),contact.getUid(),contact);		
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
@@ -219,23 +219,24 @@ public class ContactApplication implements Serializable {
 		contact.setEmail(emailNew);
 		emailIndex.remove(email);
 		emailIndex.put(emailNew,contact);
-		nameUidIndex.put(contact.getName(),contact.getUid(),contact);
+		nameUidIndex.put(contact.getName().toLowerCase(),contact.getUid(),contact);
 		
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
 	}
 	public static void updateAddress(MultiKeyMap nameUidIndex,Map<String,Contact> emailIndex,Map<String, Long> nameIndex,String email) {
-		String addressOld;
-		String addressNew;
+		
 		Contact contact;
+		
 		try {
-		System.out.println("Enter the address:");
-		addressNew=scan.nextLine();
+		
 		contact=emailIndex.get(email);
-		contact.setAddress(addressNew);
+		
+		getAddress(contact.address);
+		
 		emailIndex.put(email,contact);
-		nameUidIndex.put(contact.getName(),contact.getUid(),contact);
+		nameUidIndex.put(contact.getName().toLowerCase(),contact.getUid(),contact);
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
@@ -257,6 +258,34 @@ public class ContactApplication implements Serializable {
 		}catch(Exception e) {
 			System.out.println(e+" Try again!");
 		}
+	}
+	public static void getAddress(Address address) {
+		String doorNo;
+		String street;
+		String city;
+		int pincode;
+		try {
+		System.out.println("Enter Address to Update:");
+		System.out.println("Enter DoorNo:");
+		doorNo=scan.nextLine();
+		
+		System.out.println("Enter Street:");
+		street=scan.nextLine();
+		
+		System.out.println("Enter City:");
+		city=scan.nextLine();
+		
+		System.out.println("Enter pincode");
+		pincode=Integer.parseInt(scan.nextLine());
+		address.setDoorNo(doorNo);
+		address.setStreet(street);
+		address.setCity(city);
+		address.setPincode(pincode);
+		}catch(Exception e) {
+			System.out.println(e+" Try Again!");
+			//getAddress(address);
+		}
+		
 	}
 	public static boolean checkIsValidEmail(String email) {
 		String eFormat = "\\w+@\\w+\\.\\w+";
@@ -333,7 +362,7 @@ public class ContactApplication implements Serializable {
 			}
 		}
 		catch(Exception e) {
-			System.out.println("Wrong Input! Please try again!");
+			System.out.println(e+" Wrong Input! Please try again!");
 			}
 		
 	}
