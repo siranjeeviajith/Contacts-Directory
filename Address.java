@@ -1,9 +1,9 @@
 import java.io.Serializable;
 
 public class Address implements Serializable {
-	private String doorNo;
-	private String street;
-	private String city;
+	private String doorNo="";
+	private String street="";
+	private String city="";
 	private int pincode;
 	public String getDoorNo() {
 		return doorNo;
@@ -30,6 +30,9 @@ public class Address implements Serializable {
 		this.pincode = pincode;
 	}
 	public String toString() {
+		if(pincode==0) {
+			return doorNo+" "+street+"\n\t\t  "+city+"\n";
+		}
 		return doorNo+" "+street+"\n\t\t  "+city+"\n\t\t  "+pincode;
 	}
 	
